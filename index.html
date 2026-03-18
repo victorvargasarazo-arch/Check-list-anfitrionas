@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check List Anfitriones</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#FAF7F2; --white:#FFFFFF; --gold:#C9A96E; --gold-dark:#A07840;
+  --charcoal:#2C2C2C; --gray:#6B6B6B; --lgray:#E8E4DF;
+  --green:#4A7C59; --green-light:#EAF4EE;
+  --blue:#3D4DBF; --blue-light:#EEF0FA;
+  --red:#C0392B; --gold-bg:#FDF5E6;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);min-height:100vh;}
+
+.header{background:var(–charcoal);padding:28px 24px 22px;text-align:center;position:relative;}
+.header::before{content:’’;position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(–gold-dark),var(–gold),var(–gold-dark));}
+.header-label{font-size:10px;font-weight:600;letter-spacing:3px;color:var(–gold);text-transform:uppercase;margin-bottom:6px;}
+.header h1{font-family:‘Playfair Display’,serif;font-size:26px;color:var(–white);font-weight:700;line-height:1.2;}
+.header-div{width:40px;height:2px;background:var(–gold);margin:10px auto 0;}
+
+.dtbar{background:var(–gold);padding:10px 20px;display:flex;justify-content:space-between;align-items:center;}
+.dtbar span{font-size:12px;font-weight:600;color:var(–charcoal);}
+#clock{font-weight:700;font-size:13px;}
+
+.steps{background:var(–white);padding:14px 16px;display:flex;gap:6px;border-bottom:1px solid var(–lgray);overflow-x:auto;}
+.sdot{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600;background:var(–cream);color:var(–gray);transition:all .25s;white-space:nowrap;flex-shrink:0;}
+.sdot.active{background:var(–charcoal);color:var(–white);}
+.sdot.done{background:var(–green-light);color:var(–green);}
+.snum{width:18px;height:18px;border-radius:50%;background:var(–lgray);color:var(–gray);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.sdot.active .snum{background:var(–gold);color:var(–charcoal);}
+.sdot.done .snum{background:var(–green);color:white;}
+
+.wrap{padding:20px 16px 110px;max-width:600px;margin:0 auto;}
+
+.sec{display:none;animation:fsi .4s ease both;}
+.sec.active{display:block;}
+@keyframes fsi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(–white);border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.ctitle{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(–gold-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ctitle::after{content:’’;flex:1;height:1px;background:var(–lgray);}
+
+.notebox{border-left:4px solid var(–gold);border-radius:8px;padding:14px 16px;margin-bottom:16px;background:var(–gold-bg);}
+.notebox .ntitle{font-size:11px;font-weight:700;letter-spacing:2px;color:var(–gold-dark);text-transform:uppercase;margin-bottom:8px;}
+.notebox p{font-size:12px;color:var(–charcoal);line-height:1.7;}
+.notebox .emails{margin-top:8px;font-size:11px;color:var(–gold-dark);font-weight:600;}
+
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;}
+.badge-c{background:var(–blue-light);color:var(–blue);}
+.badge-a{background:var(–green-light);color:var(–green);}
+.badge-f{background:var(–gold-bg);color:var(–gold-dark);}
+
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(–gray);margin-bottom:8px;}
+.fg input{width:100%;padding:12px 16px;border:1.5px solid var(–lgray);border-radius:8px;font-family:‘DM Sans’,sans-serif;font-size:15px;color:var(–charcoal);background:var(–cream);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;}
+.fg input:focus{border-color:var(–gold);box-shadow:0 0 0 3px rgba(201,169,110,.15);}
+.fg input::placeholder{color:#BBB;}
+
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.tbtn{padding:14px 8px;border:2px solid var(–lgray);border-radius:10px;background:var(–cream);text-align:center;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;}
+.tbtn .ticon{font-size:22px;display:block;margin-bottom:6px;}
+.tbtn .tlabel{font-size:12px;font-weight:600;color:var(–gray);}
+.tbtn.active{border-color:var(–gold);background:var(–gold-bg);box-shadow:0 2px 8px rgba(201,169,110,.25);}
+.tbtn.active .tlabel{color:var(–gold-dark);}
+
+.cklist{list-style:none;}
+.cklist li{display:flex;align-items:flex-start;gap:14px;padding:13px 4px;border-bottom:1px solid var(–lgray);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.cklist li:last-child{border-bottom:none;}
+.cbox{width:22px;height:22px;min-width:22px;border:2px solid var(–lgray);border-radius:5px;display:flex;align-items:center;justify-content:center;transition:all .2s;background:var(–white);margin-top:1px;}
+.cbox svg{display:none;}
+.cklist li.chk .cbox{background:var(–green);border-color:var(–green);}
+.cklist li.chk .cbox svg{display:block;}
+.clabel{font-size:13px;color:var(–charcoal);line-height:1.5;flex:1;}
+.cklist li.chk .clabel{text-decoration:line-through;color:#AAA;}
+
+.pwrap{margin-top:16px;background:var(–lgray);border-radius:100px;height:6px;overflow:hidden;}
+.pbar{height:100%;background:linear-gradient(90deg,var(–gold-dark),var(–gold));border-radius:100px;transition:width .4s ease;width:0%;}
+.ptxt{display:flex;justify-content:space-between;margin-top:8px;}
+.ptxt span{font-size:11px;font-weight:600;color:var(–gray);}
+.pcnt{color:var(–gold-dark) !important;}
+
+.fup{border:2px dashed var(–gold);border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(–cream);position:relative;}
+.fup:hover{border-color:var(–gold-dark);background:var(–gold-bg);}
+.fup input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.fup .ficon{font-size:36px;margin-bottom:10px;}
+.fup p{font-size:13px;color:var(–gray);}
+.fup strong{color:var(–gold-dark);}
+.fprev{margin-top:14px;display:none;}
+.fprev img{width:100%;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);}
+.fname{font-size:12px;color:var(–green);font-weight:600;margin-top:8px;}
+
+.bbar{position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:linear-gradient(to top,var(–cream) 80%,transparent);display:flex;gap:10px;z-index:10;}
+.btn{flex:1;padding:15px;border:none;border-radius:12px;font-family:‘DM Sans’,sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-back{background:var(–white);color:var(–charcoal);border:1.5px solid var(–lgray);flex:0.5;}
+.btn-next{background:var(–charcoal);color:var(–white);position:relative;overflow:hidden;}
+.btn-next::before{content:’’;position:absolute;top:0;left:0;width:4px;height:100%;background:var(–gold);}
+.btn-next:hover{background:#1a1a1a;transform:translateY(-1px);}
+.btn-send{background:var(–green);color:white;}
+.btn-send:hover{background:#3a6b49;transform:translateY(-1px);}
+
+.errmsg{font-size:11px;color:var(–red);margin-top:6px;display:none;font-weight:500;}
+.errmsg.show{display:block;}
+
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.moverlay.show{display:flex;}
+.modal{background:var(–white);border-radius:16px;padding:32px 24px;max-width:380px;width:100%;text-align:center;animation:mpop .3s cubic-bezier(.175,.885,.32,1.275) both;}
+@keyframes mpop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.micon{width:64px;height:64px;background:var(–green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:30px;}
+.modal h2{font-family:‘Playfair Display’,serif;font-size:22px;color:var(–charcoal);margin-bottom:10px;}
+.modal p{font-size:13px;color:var(–gray);line-height:1.6;margin-bottom:6px;}
+.mdetail{background:var(–cream);border-radius:8px;padding:12px 16px;margin:14px 0;text-align:left;}
+.mdetail p{font-size:12px;margin-bottom:5px;color:var(–charcoal);}
+.mdetail strong{color:var(–gold-dark);}
+.mclose{width:100%;padding:14px;background:var(–charcoal);color:white;border:none;border-radius:10px;font-family:‘DM Sans’,sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;}
+
+.soverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.soverlay.show{display:flex;}
+.spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:var(–gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.soverlay p{color:white;font-weight:600;font-size:14px;letter-spacing:1px;}
+
+/* SVG check shorthand */
+.ck{display:none;}
+li.chk .ck{display:block;}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">HOT Restaurante</div>
+  <h1>Check List<br>Anfitriones</h1>
+  <div class="header-div"></div>
+</div>
+
+<div class="dtbar">
+  <span id="fecha">—</span>
+  <span id="clock">—</span>
+</div>
+
+<div class="steps">
+  <div class="sdot active" id="s1"><div class="snum">1</div>Datos</div>
+  <div class="sdot" id="s2"><div class="snum">2</div>Verificación</div>
+  <div class="sdot" id="s3"><div class="snum">3</div>Cierre</div>
+  <div class="sdot" id="s4"><div class="snum">4</div>Apertura</div>
+  <div class="sdot" id="s5"><div class="snum">5</div>Evidencia</div>
+</div>
+
+<div class="wrap">
+
+  <!-- SEC 1: DATOS -->
+
+  <div class="sec active" id="sec-1">
+    <div class="notebox">
+      <div class="ntitle">Instrucciones</div>
+      <p>Para entregar su turno el vendedor debe verificar que sus mesas desocupadas estén limpias y ordenadas, cubiertos empacados, Mise and Place en orden. Entregar mesas en físico y en sistema al vendedor que recibe turno y al administrador. Al retirarse deje su locker limpio, desocupado y abierto.</p>
+      <div class="emails">Enviar a: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f19060c1b001d190e1d080e1c2f07001b1d0a1c1b0e1a1d0e011b0a410c0002">[email&#160;protected]</a> · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f4d504c525a4d465a4c4b4d5e5b5e7f57504b4d5a4c4b5e4a4d5e514b5a115c5052">[email&#160;protected]</a></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Anfitrión</div>
+      <div class="fg">
+        <label>Nombre completo *</label>
+        <input type="text" id="nombre" placeholder="Escribe tu nombre..." autocomplete="off">
+        <div class="errmsg" id="err-nombre">Por favor ingresa tu nombre.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Turno</div>
+      <div class="tgrid">
+        <div class="tbtn" data-turno="Apertura" onclick="selTurno(this)"><span class="ticon">🌅</span><span class="tlabel">Apertura</span></div>
+        <div class="tbtn" data-turno="Medio" onclick="selTurno(this)"><span class="ticon">☀️</span><span class="tlabel">Medio</span></div>
+        <div class="tbtn" data-turno="Cierre" onclick="selTurno(this)"><span class="ticon">🌙</span><span class="tlabel">Cierre</span></div>
+      </div>
+      <div class="errmsg" id="err-turno">Por favor selecciona un turno.</div>
+    </div>
+  </div>
+
+  <!-- SEC 2: VERIFICACIÓN -->
+
+  <div class="sec" id="sec-2">
+    <div class="card">
+      <div class="ctitle">Actividades de Verificación</div>
+      <ul class="cklist" id="ck-verif">
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Limpiar chichets mesas</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Limpiar mesas y bancas</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Limpiar paredes</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Organizar Mise and Place</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Limpiar televisores y bafles</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Limpiar rejillas aires acondicionados</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Revisar menaje — platos rotos</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Hacer inventario de cubiertos</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Pedir reposición de cubiertos</span></li>
+        <li onclick="tog(this,'verif')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Revisión de áreas y/o equipos por mantenimiento</span></li>
+      </ul>
+      <div class="pwrap"><div class="pbar" id="pb-verif"></div></div>
+      <div class="ptxt"><span>Progreso</span><span class="pcnt" id="pc-verif">0 / 10</span></div>
+    </div>
+  </div>
+
+  <!-- SEC 3: CIERRE -->
+
+  <div class="sec" id="sec-3">
+    <div class="card">
+      <div class="badge badge-c">🌙 Anfitriona y Vendedores de Cierre</div>
+      <div class="fg">
+        <label>Personal que realiza el cierre *</label>
+        <input type="text" id="personal-cierre" placeholder="Ej: María López, Juan Pérez, Carlos Díaz..." autocomplete="off">
+        <div class="errmsg" id="err-cierre">Por favor escribe los nombres del personal de cierre.</div>
+      </div>
+      <ul class="cklist" id="ck-cierre">
+        <li onclick="tog(this,'cierre')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Recoger sistema</span></li>
+        <li onclick="tog(this,'cierre')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Recoger Mise and Place</span></li>
+        <li onclick="tog(this,'cierre')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Recoger sillas</span></li>
+        <li onclick="tog(this,'cierre')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Guardar sillas</span></li>
+        <li onclick="tog(this,'cierre')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Guardar Despacho</span></li>
+      </ul>
+      <div class="pwrap"><div class="pbar" id="pb-cierre"></div></div>
+      <div class="ptxt"><span>Progreso</span><span class="pcnt" id="pc-cierre">0 / 5</span></div>
+    </div>
+  </div>
+
+  <!-- SEC 4: APERTURA -->
+
+  <div class="sec" id="sec-4">
+    <div class="card">
+      <div class="badge badge-a">🌅 Regístrese — Guarde Celular</div>
+      <ul class="cklist" id="ck-apertura">
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Recibir su plaza en perfecto estado, orden y limpieza</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Limpiar y desinfectar todas sus mesas, alinear</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Hacer el aseo de cierre, barrer, trapear y organizar</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Mise and Place — Verificar que se encuentre organizado</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Montado listo para el servicio del día siguiente</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Verificar que los cubiertos estén en su totalidad empacados</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Dejar completamente los mesones limpios</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Recoger los aspersores de alcohol y dejarlos en el misceplast</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Recoger y guardar las salsas</span></li>
+        <li onclick="tog(this,'apertura')"><div class="cbox"><svg class="ck" width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="clabel">Recoger los charoles de servicio y pasar a los stewards</span></li>
+      </ul>
+      <div class="pwrap"><div class="pbar" id="pb-apertura"></div></div>
+      <div class="ptxt"><span>Progreso</span><span class="pcnt" id="pc-apertura">0 / 10</span></div>
+    </div>
+  </div>
+
+  <!-- SEC 5: EVIDENCIA -->
+
+  <div class="sec" id="sec-5">
+    <div class="card">
+      <div class="badge badge-f">📸 Finalización de Actividad</div>
+      <p style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:18px;">Aquí vas a tomar una foto del aviso y dejar evidencia del cierre del mismo.</p>
+      <div class="fup" id="fup">
+        <input type="file" accept="image/*" capture="environment" id="foto-input" onchange="handleFoto(this)">
+        <div class="ficon">📷</div>
+        <p><strong>Tomar foto del letrero antes de irte</strong></p>
+        <p style="margin-top:6px;font-size:11px;">Toca para abrir la cámara o seleccionar imagen</p>
+      </div>
+      <div class="fprev" id="fprev">
+        <img id="foto-img" src="" alt="Evidencia">
+        <p class="fname" id="foto-name"></p>
+      </div>
+      <div class="errmsg" id="err-foto">Por favor adjunta la foto del letrero.</div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Observaciones</div>
+      <div class="fg">
+        <label>Comentarios adicionales (opcional)</label>
+        <input type="text" id="obs" placeholder="Ej: Equipo sin novedad..." autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM BAR -->
+
+<div class="bbar">
+  <button class="btn btn-back" id="btn-back" onclick="goBack()" style="display:none">&#8592; Atrás</button>
+  <button class="btn btn-next" id="btn-next" onclick="goNext()">Siguiente &#8594;</button>
+  <button class="btn btn-send" id="btn-send" onclick="enviar()" style="display:none">&#10003; Enviar Check List</button>
+</div>
+
+<!-- SENDING -->
+
+<div class="soverlay" id="sending">
+  <div class="spinner"></div>
+  <p>Enviando registro...</p>
+</div>
+
+<!-- MODAL -->
+
+<div class="moverlay" id="modal">
+  <div class="modal">
+    <div class="micon">&#10003;</div>
+    <h2>Turno Registrado</h2>
+    <p>El check list fue enviado correctamente.</p>
+    <div class="mdetail">
+      <p><strong>Anfitrión:</strong> <span id="m-nombre">—</span></p>
+      <p><strong>Turno:</strong> <span id="m-turno">—</span></p>
+      <p><strong>Personal cierre:</strong> <span id="m-personal">—</span></p>
+      <p><strong>Fecha:</strong> <span id="m-fecha">—</span></p>
+      <p><strong>Hora:</strong> <span id="m-hora">—</span></p>
+      <p><strong>Verificación:</strong> <span id="m-verif">—</span></p>
+      <p><strong>Cierre:</strong> <span id="m-cierre">—</span></p>
+      <p><strong>Apertura:</strong> <span id="m-apertura">—</span></p>
+    </div>
+    <button class="mclose" onclick="cerrar()">Cerrar</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+var SCRIPT_URL = ‘https://script.google.com/a/macros/hotrestaurante.com/s/AKfycby1RmUnh7IbOOhUI1KaUAvRkQY2cSiAA-KJisIwsi_9ylb48e8Ko50E0qZKyKilIHBC/exec’;
+var step = 1;
+var turno = ‘’;
+var foto64 = ‘’;
+var TOTAL = 5;
+var cnts = {verif:10, cierre:5, apertura:10};
+
+function updateClock() {
+var now = new Date();
+var dias = [‘Domingo’,‘Lunes’,‘Martes’,‘Miércoles’,‘Jueves’,‘Viernes’,‘Sábado’];
+var meses = [‘Ene’,‘Feb’,‘Mar’,‘Abr’,‘May’,‘Jun’,‘Jul’,‘Ago’,‘Sep’,‘Oct’,‘Nov’,‘Dic’];
+document.getElementById(‘fecha’).textContent = dias[now.getDay()] + ‘, ’ + now.getDate() + ’ ’ + meses[now.getMonth()] + ’ ’ + now.getFullYear();
+var h = (‘0’+now.getHours()).slice(-2);
+var m = (‘0’+now.getMinutes()).slice(-2);
+var s = (‘0’+now.getSeconds()).slice(-2);
+document.getElementById(‘clock’).textContent = h+’:’+m+’:’+s;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+function selTurno(el) {
+var btns = document.querySelectorAll(’.tbtn’);
+for (var i=0; i<btns.length; i++) btns[i].classList.remove(‘active’);
+el.classList.add(‘active’);
+turno = el.getAttribute(‘data-turno’);
+document.getElementById(‘err-turno’).classList.remove(‘show’);
+}
+
+function tog(li, key) {
+li.classList.toggle(‘chk’);
+updProg(key);
+}
+
+function updProg(key) {
+var list = document.getElementById(‘ck-’+key);
+var total = cnts[key];
+var checked = list.querySelectorAll(‘li.chk’).length;
+document.getElementById(‘pb-’+key).style.width = (checked/total*100)+’%’;
+document.getElementById(‘pc-’+key).textContent = checked+’ / ’+total;
+}
+
+function handleFoto(input) {
+var file = input.files[0];
+if (!file) return;
+var reader = new FileReader();
+reader.onload = function(e) {
+foto64 = e.target.result;
+document.getElementById(‘foto-img’).src = foto64;
+document.getElementById(‘foto-name’).textContent = ’✓ ’+file.name;
+document.getElementById(‘fprev’).style.display = ‘block’;
+document.getElementById(‘err-foto’).classList.remove(‘show’);
+};
+reader.readAsDataURL(file);
+}
+
+function showStep(n) {
+var secs = document.querySelectorAll(’.sec’);
+for (var i=0; i<secs.length; i++) secs[i].classList.remove(‘active’);
+document.getElementById(‘sec-’+n).classList.add(‘active’);
+var dots = document.querySelectorAll(’.sdot’);
+for (var i=0; i<dots.length; i++) {
+dots[i].classList.remove(‘active’,‘done’);
+if (i+1 < n) dots[i].classList.add(‘done’);
+if (i+1 === n) dots[i].classList.add(‘active’);
+}
+document.getElementById(‘btn-back’).style.display = n > 1 ? ‘block’ : ‘none’;
+document.getElementById(‘btn-next’).style.display = n < TOTAL ? ‘block’ : ‘none’;
+document.getElementById(‘btn-send’).style.display = n === TOTAL ? ‘block’ : ‘none’;
+window.scrollTo(0,0);
+}
+
+function validar(n) {
+if (n === 1) {
+var nom = document.getElementById(‘nombre’).value.trim();
+var ok = true;
+if (!nom) { document.getElementById(‘err-nombre’).classList.add(‘show’); ok = false; }
+else document.getElementById(‘err-nombre’).classList.remove(‘show’);
+if (!turno) { document.getElementById(‘err-turno’).classList.add(‘show’); ok = false; }
+else document.getElementById(‘err-turno’).classList.remove(‘show’);
+return ok;
+}
+if (n === 3) {
+var p = document.getElementById(‘personal-cierre’).value.trim();
+if (!p) {
+document.getElementById(‘err-cierre’).classList.add(‘show’);
+document.getElementById(‘personal-cierre’).focus();
+return false;
+}
+document.getElementById(‘err-cierre’).classList.remove(‘show’);
+return true;
+}
+return true;
+}
+
+function goNext() {
+if (!validar(step)) return;
+step++;
+showStep(step);
+}
+
+function goBack() {
+if (step > 1) { step–; showStep(step); }
+}
+
+function getChecked(listId) {
+var items = document.querySelectorAll(’#’+listId+’ li.chk .clabel’);
+var arr = [];
+for (var i=0; i<items.length; i++) arr.push(items[i].textContent);
+return arr;
+}
+
+function enviar() {
+if (!foto64) {
+document.getElementById(‘err-foto’).classList.add(‘show’);
+return;
+}
+var now = new Date();
+var meses = [‘Ene’,‘Feb’,‘Mar’,‘Abr’,‘May’,‘Jun’,‘Jul’,‘Ago’,‘Sep’,‘Oct’,‘Nov’,‘Dic’];
+var fecha = now.getDate()+’ ‘+meses[now.getMonth()]+’ ‘+now.getFullYear();
+var hora = (‘0’+now.getHours()).slice(-2)+’:’+(‘0’+now.getMinutes()).slice(-2);
+
+var payload = {
+nombre: document.getElementById(‘nombre’).value.trim(),
+turno: turno,
+fecha: fecha,
+hora: hora,
+verificacion: getChecked(‘ck-verif’),
+personalCierre: document.getElementById(‘personal-cierre’).value.trim(),
+cierre: getChecked(‘ck-cierre’),
+apertura: getChecked(‘ck-apertura’),
+observaciones: document.getElementById(‘obs’).value.trim(),
+foto: foto64
+};
+
+document.getElementById(‘sending’).classList.add(‘show’);
+
+fetch(SCRIPT_URL, {
+method: ‘POST’,
+mode: ‘no-cors’,
+headers: {‘Content-Type’:‘application/json’},
+body: JSON.stringify(payload)
+}).catch(function(){}).finally(function(){
+document.getElementById(‘sending’).classList.remove(‘show’);
+document.getElementById(‘m-nombre’).textContent = payload.nombre;
+document.getElementById(‘m-turno’).textContent = payload.turno;
+document.getElementById(‘m-personal’).textContent = payload.personalCierre;
+document.getElementById(‘m-fecha’).textContent = payload.fecha;
+document.getElementById(‘m-hora’).textContent = payload.hora;
+document.getElementById(‘m-verif’).textContent = payload.verificacion.length+’ / 10 completadas’;
+document.getElementById(‘m-cierre’).textContent = payload.cierre.length+’ / 5 completadas’;
+document.getElementById(‘m-apertura’).textContent = payload.apertura.length+’ / 10 completadas’;
+document.getElementById(‘modal’).classList.add(‘show’);
+});
+}
+
+function cerrar() {
+document.getElementById(‘modal’).classList.remove(‘show’);
+document.getElementById(‘nombre’).value = ‘’;
+document.getElementById(‘obs’).value = ‘’;
+document.getElementById(‘personal-cierre’).value = ‘’;
+var btns = document.querySelectorAll(’.tbtn’);
+for (var i=0; i<btns.length; i++) btns[i].classList.remove(‘active’
