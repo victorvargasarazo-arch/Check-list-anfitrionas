@@ -259,6 +259,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);min-height:100vh;}
       <p><strong>Verificacion:</strong> <span id="m-verif"></span></p>
       <p><strong>Cierre:</strong> <span id="m-cierre"></span></p>
       <p><strong>Apertura:</strong> <span id="m-apertura"></span></p>
+      <p><strong>Novedades:</strong> <span id="m-obs"></span></p>
     </div>
     <button class="mclose" onclick="cerrar()">Cerrar</button>
   </div>
@@ -418,6 +419,7 @@ function enviar() {
     document.getElementById('m-verif').textContent = payload.verificacion.length+' / 10';
     document.getElementById('m-cierre').textContent = payload.cierre.length+' / 5';
     document.getElementById('m-apertura').textContent = payload.apertura.length+' / 10';
+    document.getElementById('m-obs').textContent = payload.observaciones || 'Sin novedades';
     document.getElementById('modal').classList.add('show');
   });
 }
